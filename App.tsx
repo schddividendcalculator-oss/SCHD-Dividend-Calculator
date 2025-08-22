@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { DIVIDEND_HISTORY, FAQ_DATA } from './constants';
@@ -21,11 +20,12 @@ interface StatCardProps {
   title: string;
   value: string;
   icon: React.ReactNode;
+  color?: 'primary' | 'accent';
 }
 
-const StatCard: React.FC<StatCardProps> = ({ title, value, icon }) => (
+const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color = 'primary' }) => (
   <div className="bg-white rounded-xl shadow-md p-4 flex items-center">
-    <div className="p-3 bg-primary/10 text-primary rounded-lg mr-4">
+    <div className={`p-3 rounded-lg mr-4 ${color === 'primary' ? 'bg-primary/10 text-primary' : 'bg-accent/10 text-accent'}`}>
       {icon}
     </div>
     <div>
@@ -70,9 +70,9 @@ interface SectionProps {
 }
 
 const Section: React.FC<SectionProps> = ({ id, title, children }) => (
-  <section id={id} className="py-12 md:py-20">
-    <div className="container mx-auto px-4">
-      <h2 className="text-3xl md:text-4xl font-bold text-center text-dark-text mb-4">{title}</h2>
+  <section id={id} className="py-12 sm:py-16 md:py-20">
+    <div className="container mx-auto px-4 w-[95%] lg:w-4/5 max-w-7xl">
+      <h2 className="text-3xl sm:text-4xl font-bold text-center text-dark-text mb-4">{title}</h2>
       <div className="w-24 h-1 bg-primary mx-auto mb-10"></div>
       {children}
     </div>
@@ -120,8 +120,21 @@ const ScrollToTopButton: React.FC = () => {
 
 const App: React.FC = () => {
   const [investment, setInvestment] = useState<number>(1000);
-  const [sharePrice, setSharePrice] = useState<number>(78.50);
+  const [sharePrice, setSharePrice] = useState<number>(26);
   const [dividendYield, setDividendYield] = useState<number>(3.55);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const body = document.body;
+    if (isMenuOpen) {
+      body.style.overflow = 'hidden';
+    } else {
+      body.style.overflow = 'auto';
+    }
+    return () => {
+      body.style.overflow = 'auto';
+    };
+  }, [isMenuOpen]);
 
   const calculateDividends = useCallback(() => {
     if (investment <= 0 || sharePrice <= 0 || dividendYield <= 0) {
@@ -158,6 +171,9 @@ const App: React.FC = () => {
   
   const handleNavClick = (event: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
     event.preventDefault();
+    if (isMenuOpen) {
+      setIsMenuOpen(false);
+    }
     const element = document.getElementById(targetId);
     if (element) {
       const header = document.querySelector('header');
@@ -172,33 +188,85 @@ const App: React.FC = () => {
     }
   };
 
+  const navLinks = [
+    { id: 'calculator', name: 'Calculator' },
+    { id: 'about', name: 'About' },
+    { id: 'stats', name: 'Stats' },
+    { id: 'faq', name: 'FAQ' },
+  ];
+
   return (
     <div className="bg-light-bg min-h-screen">
+      {/* Mobile Menu */}
+      <div 
+        className={`fixed inset-0 bg-black bg-opacity-50 z-50 transition-opacity duration-300 md:hidden ${isMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        onClick={() => setIsMenuOpen(false)}
+        aria-hidden={!isMenuOpen}
+      />
+      <div
+        className={`fixed top-0 right-0 h-full w-3/4 max-w-xs bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out md:hidden ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        role="dialog"
+        aria-modal="true"
+      >
+        <div className="p-6">
+            <div className="flex justify-between items-center mb-8">
+                <span className="text-lg font-bold text-primary">Menu</span>
+                <button
+                    onClick={() => setIsMenuOpen(false)}
+                    className="text-dark-text hover:text-primary"
+                    aria-label="Close menu"
+                >
+                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <nav className="flex flex-col space-y-4">
+                {navLinks.map(link => (
+                    <a 
+                        key={link.id} 
+                        href={`#${link.id}`} 
+                        onClick={(e) => handleNavClick(e, link.id)} 
+                        className="text-lg text-light-text font-medium hover:text-primary transition py-2"
+                    >
+                        {link.name}
+                    </a>
+                ))}
+            </nav>
+        </div>
+      </div>
+
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center space-x-3">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center w-[95%] lg:w-4/5 max-w-7xl">
+          <div className="flex items-center space-x-2 sm:space-x-3">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-primary" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM8.5 15.5H7v-5h1.5v5zm3.5 0H10.5v-7H12v7zm3.5 0H14v-9h1.5v9z"/>
             </svg>
-            <h1 className="text-2xl font-bold text-dark-text">SCHD Dividend Calculator</h1>
+            <h1 className="text-lg sm:text-2xl font-bold text-dark-text">SCHD Dividend Calculator</h1>
           </div>
            <nav className="hidden md:flex space-x-6">
-              <a href="#calculator" onClick={(e) => handleNavClick(e, 'calculator')} className="text-light-text font-medium hover:text-primary transition cursor-pointer">Calculator</a>
-              <a href="#about" onClick={(e) => handleNavClick(e, 'about')} className="text-light-text font-medium hover:text-primary transition cursor-pointer">About</a>
-              <a href="#stats" onClick={(e) => handleNavClick(e, 'stats')} className="text-light-text font-medium hover:text-primary transition cursor-pointer">Stats</a>
-              <a href="#faq" onClick={(e) => handleNavClick(e, 'faq')} className="text-light-text font-medium hover:text-primary transition cursor-pointer">FAQ</a>
+              {navLinks.map(link => (
+                <a key={link.id} href={`#${link.id}`} onClick={(e) => handleNavClick(e, link.id)} className="text-light-text font-medium hover:text-primary transition cursor-pointer">{link.name}</a>
+              ))}
            </nav>
+           <div className="md:hidden">
+            <button onClick={() => setIsMenuOpen(true)} className="text-dark-text focus:outline-none" aria-label="Open menu">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+           </div>
         </div>
       </header>
       
       <main>
         {/* Calculator Section */}
-        <section id="calculator" className="pt-16 pb-12 md:pt-24 md:pb-20 bg-white">
-          <div className="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
+        <section id="calculator" className="pt-12 pb-12 sm:pt-16 sm:pb-16 md:pt-24 md:pb-20 bg-white">
+          <div className="container mx-auto px-4 grid md:grid-cols-2 gap-8 md:gap-12 items-center w-[95%] lg:w-4/5 max-w-7xl">
             {/* Input Form */}
             <div className="space-y-6">
-              <h2 className="text-3xl md:text-4xl font-bold text-dark-text leading-tight">Estimate Your SCHD Dividend Income</h2>
+              <h2 className="text-3xl sm:text-4xl font-bold text-dark-text leading-tight">Estimate Your SCHD Dividend Income</h2>
               <p className="text-lg text-light-text">Enter your investment details to see your potential passive income from SCHD dividends.</p>
               
               <div className="space-y-4">
@@ -215,9 +283,9 @@ const App: React.FC = () => {
                   <input type="number" id="yield" value={dividendYield} onChange={e => setDividendYield(Number(e.target.value))} className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-primary focus:border-primary text-lg"/>
                 </div>
               </div>
-               <div className="bg-primary/10 border-l-4 border-primary text-secondary p-4 rounded-r-lg">
+               <div className="bg-accent/10 border-l-4 border-accent text-accent-dark p-4 rounded-r-lg">
                 <div className="flex">
-                  <div className="py-1"><svg className="fill-current h-6 w-6 text-primary mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zM9 11v4h2v-4h-2zm0-4h2v2h-2V7z"/></svg></div>
+                  <div className="py-1"><svg className="fill-current h-6 w-6 text-accent mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zM9 11v4h2v-4h-2zm0-4h2v2h-2V7z"/></svg></div>
                   <div>
                     <p className="font-semibold">For accurate results, use the latest data.</p>
                     <a href="https://finance.yahoo.com/quote/SCHD/" target="_blank" rel="noopener noreferrer" className="text-sm font-medium underline hover:opacity-80">
@@ -229,27 +297,27 @@ const App: React.FC = () => {
             </div>
 
             {/* Result Display */}
-            <Card className="bg-gradient-to-br from-secondary to-primary text-white">
+            <Card className="bg-gradient-to-br from-accent-dark to-accent text-white">
               <div className="text-center mb-6">
                 <p className="text-lg opacity-90">If you invested {formatCurrency(investment)} in SCHD, your estimated yearly dividend income would be:</p>
-                <p className="text-5xl font-extrabold my-2 tracking-tight">{formatCurrency(dividends.yearly)}</p>
+                <p className="text-4xl sm:text-5xl font-extrabold my-2 tracking-tight">{formatCurrency(dividends.yearly)}</p>
               </div>
-              <div className="grid grid-cols-2 gap-4 text-center">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-center">
                 <div className="bg-white/10 p-4 rounded-lg">
                   <p className="text-sm opacity-80">Quarterly</p>
-                  <p className="text-2xl font-bold">{formatCurrency(dividends.quarterly)}</p>
+                  <p className="text-xl sm:text-2xl font-bold">{formatCurrency(dividends.quarterly)}</p>
                 </div>
                  <div className="bg-white/10 p-4 rounded-lg">
                   <p className="text-sm opacity-80">Monthly</p>
-                  <p className="text-2xl font-bold">{formatCurrency(dividends.monthly)}</p>
+                  <p className="text-xl sm:text-2xl font-bold">{formatCurrency(dividends.monthly)}</p>
                 </div>
                  <div className="bg-white/10 p-4 rounded-lg">
                   <p className="text-sm opacity-80">Weekly</p>
-                  <p className="text-2xl font-bold">{formatCurrency(dividends.weekly)}</p>
+                  <p className="text-xl sm:text-2xl font-bold">{formatCurrency(dividends.weekly)}</p>
                 </div>
                  <div className="bg-white/10 p-4 rounded-lg">
                   <p className="text-sm opacity-80">Daily</p>
-                  <p className="text-xl font-bold">{formatCurrency(dividends.daily)}</p>
+                  <p className="text-lg sm:text-xl font-bold">{formatCurrency(dividends.daily)}</p>
                 </div>
               </div>
             </Card>
@@ -266,16 +334,16 @@ const App: React.FC = () => {
         
         {/* Dividend Stats Section */}
         <Section id="stats" title="Dividend Statistics & History">
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
-            <StatCard title="Current Dividend Yield" value={`${dividendYield.toFixed(2)}%`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>}/>
-            <StatCard title="Avg. Annual Dividend (TTM)" value={`$${avgAnnualDividend}`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01" /></svg>}/>
-            <StatCard title="1-Year Dividend Growth" value={`${dividendGrowth}%`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" /></svg>} />
+          <div className="grid md:grid-cols-3 gap-4 md:gap-6 mb-12">
+            <StatCard color="primary" title="Current Dividend Yield" value={`${dividendYield.toFixed(2)}%`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>}/>
+            <StatCard color="accent" title="Avg. Annual Dividend (TTM)" value={`$${avgAnnualDividend}`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01" /></svg>}/>
+            <StatCard color="primary" title="1-Year Dividend Growth" value={`${dividendGrowth}%`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" /></svg>} />
           </div>
           <Card>
             <h3 className="text-xl font-bold mb-1">Dividend Payout History</h3>
             <p className="text-light-text mb-6">Quarterly dividend per share paid to SCHD investors.</p>
             <div className="grid lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2 h-80">
+              <div className="lg:col-span-2 h-72 sm:h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={chartData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -295,7 +363,7 @@ const App: React.FC = () => {
                   </BarChart>
                 </ResponsiveContainer>
               </div>
-              <div className="overflow-y-auto h-80 pr-2">
+              <div className="overflow-auto h-72 sm:h-80">
                 <table className="w-full text-left">
                   <thead className="bg-gray-50 sticky top-0">
                     <tr>
@@ -319,7 +387,7 @@ const App: React.FC = () => {
         
         {/* Features & How-to Section */}
         <Section id="features" title="Features & How To Use">
-          <div className="grid md:grid-cols-2 gap-12">
+          <div className="grid md:grid-cols-2 gap-8 md:gap-12">
             <Card>
               <h3 className="text-xl font-bold mb-4">Calculator Features</h3>
               <ul className="space-y-3 text-light-text list-disc list-inside">
@@ -352,7 +420,7 @@ const App: React.FC = () => {
         
         {/* Disclaimer */}
         <section className="py-12 bg-gray-100">
-          <div className="container mx-auto px-4 text-center text-sm text-gray-500 max-w-4xl">
+          <div className="container mx-auto px-4 text-center text-sm text-gray-500 w-[95%] lg:w-4/5 max-w-4xl">
             <h3 className="font-bold text-base text-gray-600 mb-2">Disclaimer</h3>
             <p>This calculator is for educational and informational purposes only. It is not financial advice. The calculations are estimates based on the data you provide and do not guarantee future results. Dividend yields and payouts can change over time. Always conduct your own research and consult with a qualified financial advisor before making any investment decisions.</p>
           </div>
@@ -361,7 +429,7 @@ const App: React.FC = () => {
 
       {/* Footer */}
       <footer className="bg-secondary text-white">
-        <div className="container mx-auto px-4 py-6 text-center">
+        <div className="container mx-auto px-4 py-6 text-center w-[95%] lg:w-4/5 max-w-7xl">
           <p>&copy; {new Date().getFullYear()} SCHD Dividend Calculator. All Rights Reserved.</p>
         </div>
       </footer>

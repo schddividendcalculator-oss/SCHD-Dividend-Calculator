@@ -2,7 +2,7 @@
 
 A modern, user-friendly single-page application to estimate dividend income from the Schwab U.S. Dividend Equity ETF™ (SCHD). Calculate potential earnings, view historical payout data, and analyze dividend growth with a clean and responsive interface.
 
-**Live Demo:** https://schddividend.com/ (Note: This is a placeholder link based on the canonical URL in the HTML)
+**Live Demo:** [https://schddividendcalculator.com/](https://schddividendcalculator.com/) (Note: This is a placeholder link based on the canonical URL in the HTML)
 
 <!-- ![SCHD Dividend Calculator Screenshot](placeholder.png) -->
 
@@ -43,7 +43,7 @@ This project is set up to run without a complex build process. You just need a s
 
 1.  **Clone the repository (or download the files):**
     ```bash
-    git clone https://github.com/schddividendcalculator-oss/SCHD-Dividend-Calculator.git
+    git clone https://your-repository-url.git
     cd schd-dividend-calculator
     ```
 
