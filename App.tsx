@@ -118,11 +118,14 @@ const ScrollToTopButton: React.FC = () => {
 
 // --- Main App Component ---
 
+type Period = 'daily' | 'monthly' | 'quarterly' | 'annually';
+
 const App: React.FC = () => {
   const [investment, setInvestment] = useState<number>(1000);
   const [sharePrice, setSharePrice] = useState<number>(26);
   const [dividendYield, setDividendYield] = useState<number>(3.55);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activePeriod, setActivePeriod] = useState<Period>('annually');
 
   useEffect(() => {
     const body = document.body;
@@ -138,14 +141,13 @@ const App: React.FC = () => {
 
   const calculateDividends = useCallback(() => {
     if (investment <= 0 || sharePrice <= 0 || dividendYield <= 0) {
-      return { yearly: 0, quarterly: 0, monthly: 0, weekly: 0, daily: 0 };
+      return { annually: 0, quarterly: 0, monthly: 0, daily: 0 };
     }
     const yearly = investment * (dividendYield / 100);
     return {
-      yearly,
+      annually: yearly,
       quarterly: yearly / 4,
       monthly: yearly / 12,
-      weekly: yearly / 52,
       daily: yearly / 365,
     };
   }, [investment, dividendYield]);
@@ -193,6 +195,13 @@ const App: React.FC = () => {
     { id: 'about', name: 'About' },
     { id: 'stats', name: 'Stats' },
     { id: 'faq', name: 'FAQ' },
+  ];
+
+  const periodTabs: { id: Period, name: string }[] = [
+    { id: 'daily', name: 'Daily' },
+    { id: 'monthly', name: 'Monthly' },
+    { id: 'quarterly', name: 'Quarterly' },
+    { id: 'annually', name: 'Annually' },
   ];
 
   return (
@@ -297,29 +306,25 @@ const App: React.FC = () => {
             </div>
 
             {/* Result Display */}
-            <Card className="bg-gradient-to-br from-accent-dark to-accent text-white">
-              <div className="text-center mb-6">
-                <p className="text-lg opacity-90">If you invested {formatCurrency(investment)} in SCHD, your estimated yearly dividend income would be:</p>
-                <p className="text-4xl sm:text-5xl font-extrabold my-2 tracking-tight">{formatCurrency(dividends.yearly)}</p>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-center">
-                <div className="bg-white/10 p-4 rounded-lg">
-                  <p className="text-sm opacity-80">Quarterly</p>
-                  <p className="text-xl sm:text-2xl font-bold">{formatCurrency(dividends.quarterly)}</p>
+            <Card className="bg-gradient-to-br from-accent-dark to-accent text-white flex flex-col justify-center">
+                <p className="text-center text-lg opacity-90 mb-4">Based on your {formatCurrency(investment)} investment:</p>
+                <div className="bg-white/20 p-1 rounded-full flex items-center mb-6">
+                    {periodTabs.map(tab => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActivePeriod(tab.id)}
+                            className={`w-full text-center rounded-full py-2 text-sm font-semibold transition-all duration-300 ${activePeriod === tab.id ? 'bg-white text-accent-dark shadow-md' : 'text-white/80 hover:bg-white/30'}`}
+                        >
+                            {tab.name}
+                        </button>
+                    ))}
                 </div>
-                 <div className="bg-white/10 p-4 rounded-lg">
-                  <p className="text-sm opacity-80">Monthly</p>
-                  <p className="text-xl sm:text-2xl font-bold">{formatCurrency(dividends.monthly)}</p>
+                <div className="text-center">
+                    <p className="text-base sm:text-lg opacity-90">Estimated {periodTabs.find(t => t.id === activePeriod)?.name} Income</p>
+                    <p className="text-4xl sm:text-5xl font-extrabold my-2 tracking-tight">
+                        {formatCurrency(dividends[activePeriod])}
+                    </p>
                 </div>
-                 <div className="bg-white/10 p-4 rounded-lg">
-                  <p className="text-sm opacity-80">Weekly</p>
-                  <p className="text-xl sm:text-2xl font-bold">{formatCurrency(dividends.weekly)}</p>
-                </div>
-                 <div className="bg-white/10 p-4 rounded-lg">
-                  <p className="text-sm opacity-80">Daily</p>
-                  <p className="text-lg sm:text-xl font-bold">{formatCurrency(dividends.daily)}</p>
-                </div>
-              </div>
             </Card>
           </div>
         </section>
@@ -407,7 +412,7 @@ const App: React.FC = () => {
               </ol>
             </Card>
           </div>
-        </Section>
+        </section>
 
         {/* FAQ Section */}
         <Section id="faq" title="Frequently Asked Questions">

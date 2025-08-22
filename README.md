@@ -2,7 +2,7 @@
 
 A modern, user-friendly single-page application to estimate dividend income from the Schwab U.S. Dividend Equity ETF™ (SCHD). Calculate potential earnings, view historical payout data, and analyze dividend growth with a clean and responsive interface.
 
-**Live Demo:** [https://schddividendcalculator.com/](https://schddividendcalculator.com/) (Note: This is a placeholder link based on the canonical URL in the HTML)
+**Live Demo:** [https://schddividendcalculator.netlify.app/](https://schddividendcalculator.netlify.app/)
 
 <!-- ![SCHD Dividend Calculator Screenshot](placeholder.png) -->
 
