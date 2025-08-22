@@ -1,0 +1,5 @@
+{
+  "name": "SCHD Dividend Calculator",
+  "description": "A modern, user-friendly calculator to estimate dividend income from the Schwab U.S. Dividend Equity ETF™ (SCHD). Calculate potential earnings, view historical payout data, and analyze dividend growth.",
+  "requestFramePermissions": []
+}

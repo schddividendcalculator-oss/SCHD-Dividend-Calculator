@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- SEO Meta Tags -->
+    <title>SCHD Dividend Calculator | Estimate Your Dividend Income</title>
+    <meta name="description" content="Calculate your potential dividend income from SCHD. Input your investment amount to see daily, monthly, and yearly dividend projections based on the latest data.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://schddividendcalculator.com/" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://schddividendcalculator.com/">
+    <meta property="og:title" content="SCHD Dividend Calculator | Estimate Your Dividend Income">
+    <meta property="og:description" content="Calculate your potential dividend income from SCHD. Input your investment amount to see daily, monthly, and yearly dividend projections based on the latest data.">
+    <meta property="og:image" content="https://schddividendcalculator.com/og-image.png"> 
+    <meta property="og:site_name" content="SCHD Dividend Calculator">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://schddividendcalculator.com/">
+    <meta name="twitter:title" content="SCHD Dividend Calculator | Estimate Your Dividend Income">
+    <meta name="twitter:description" content="Calculate your potential dividend income from SCHD. Input your investment amount to see daily, monthly, and yearly dividend projections based on the latest data.">
+    <meta name="twitter:image" content="https://schddividendcalculator.com/og-image.png">
+
+    <!-- Styles & Scripts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+            colors: {
+              'primary': '#16a34a', // green-600
+              'secondary': '#14532d', // green-900
+              'light-bg': '#f8f9fa',
+              'dark-text': '#1a202c',
+              'light-text': '#4a5568',
+            },
+          }
+        }
+      }
+    </script>
+    
+    <!-- JSON-LD Schema Markup -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "name": "SCHD Dividend Calculator",
+          "url": "https://schddividendcalculator.com/"
+        },
+        {
+          "@type": "WebPage",
+          "name": "SCHD Dividend Calculator",
+          "url": "https://schddividendcalculator.com/",
+          "description": "A modern, user-friendly calculator to estimate dividend income from the Schwab U.S. Dividend Equity ETF™ (SCHD).",
+          "isPartOf": {
+            "@id": "https://schddividendcalculator.com/#website"
+          }
+        },
+        {
+          "@type": "WebApplication",
+          "name": "SCHD Dividend Calculator",
+          "applicationCategory": "FinanceApplication",
+          "operatingSystem": "All",
+          "browserRequirements": "Requires HTML5 support",
+          "description": "Calculate daily, weekly, monthly, quarterly, and yearly dividend income from SCHD investments.",
+          "featureList": [
+            "Dividend Income Calculation",
+            "Historical Dividend Payout Chart",
+            "Dividend Growth Statistics",
+            "FAQ Section"
+          ]
+        },
+        {
+          "@type": "HowTo",
+          "name": "How to Use the SCHD Dividend Calculator",
+          "step": [
+            {
+              "@type": "HowToStep",
+              "name": "Enter Investment Details",
+              "text": "Input your total investment amount, the current share price of SCHD, and its annual dividend yield. For the most accurate data, check a reliable financial source like Yahoo Finance.",
+              "position": 1
+            },
+            {
+              "@type": "HowToStep",
+              "name": "View Results",
+              "text": "The calculator will instantly display your projected dividend income broken down by daily, weekly, monthly, quarterly, and yearly periods.",
+              "position": 2
+            },
+            {
+              "@type": "HowToStep",
+              "name": "Analyze Data",
+              "text": "Explore the historical dividend payout table and chart to understand SCHD's past performance and growth trends.",
+              "position": 3
+            }
+          ]
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What is SCHD?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "SCHD stands for the Schwab U.S. Dividend Equity ETF™. It is an exchange-traded fund designed to track the performance of the Dow Jones U.S. Dividend 100™ Index, which is composed of high-dividend-yielding U.S. stocks."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How often does SCHD pay dividends?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "SCHD typically pays dividends on a quarterly basis."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Is this calculator's data live?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "No, the share price and dividend yield are pre-filled with recent data for demonstration purposes. For the most accurate calculation, you should input the current live data from a trusted financial source like Yahoo Finance or your brokerage."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Does this calculator account for dividend reinvestment (DRIP)?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "This tool calculates simple dividend income based on your initial investment and does not automatically compound or reinvest dividends. It provides a snapshot of your potential income for a given period."
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.1.1/",
+    "react": "https://esm.sh/react@^19.1.1",
+    "react-dom/": "https://esm.sh/react-dom@^19.1.1/",
+    "recharts": "https://esm.sh/recharts@^3.1.2"
+  }
+}
+</script>
+</head>
+  <body class="bg-light-bg text-dark-text font-sans">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
