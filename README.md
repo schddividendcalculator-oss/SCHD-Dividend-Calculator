@@ -43,7 +43,7 @@ This project is set up to run without a complex build process. You just need a s
 
 1.  **Clone the repository (or download the files):**
     ```bash
-    git clone https://your-repository-url.git
+    git clone https://github.com/schddividendcalculator-oss/SCHD-Dividend-Calculator.git
     cd schd-dividend-calculator
     ```
 
