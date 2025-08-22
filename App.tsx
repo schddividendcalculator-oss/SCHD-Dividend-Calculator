@@ -71,7 +71,7 @@ interface SectionProps {
 
 const Section: React.FC<SectionProps> = ({ id, title, children }) => (
   <section id={id} className="py-12 sm:py-16 md:py-20">
-    <div className="container mx-auto px-4 w-[95%] lg:w-4/5 max-w-7xl">
+    <div className="container mx-auto px-4 w-[95%] lg:w-[85%] max-w-7xl">
       <h2 className="text-3xl sm:text-4xl font-bold text-center text-dark-text mb-4">{title}</h2>
       <div className="w-24 h-1 bg-primary mx-auto mb-10"></div>
       {children}
@@ -247,7 +247,7 @@ const App: React.FC = () => {
 
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center w-[95%] lg:w-4/5 max-w-7xl">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center w-[95%] lg:w-[85%] max-w-7xl">
           <div className="flex items-center space-x-2 sm:space-x-3">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-primary" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM8.5 15.5H7v-5h1.5v5zm3.5 0H10.5v-7H12v7zm3.5 0H14v-9h1.5v9z"/>
@@ -272,7 +272,7 @@ const App: React.FC = () => {
       <main>
         {/* Calculator Section */}
         <section id="calculator" className="pt-12 pb-12 sm:pt-16 sm:pb-16 md:pt-24 md:pb-20 bg-white">
-          <div className="container mx-auto px-4 grid md:grid-cols-2 gap-8 md:gap-12 items-center w-[95%] lg:w-4/5 max-w-7xl">
+          <div className="container mx-auto px-4 grid md:grid-cols-2 gap-8 md:gap-12 items-center w-[95%] lg:w-[85%] max-w-7xl">
             {/* Input Form */}
             <div className="space-y-6">
               <h2 className="text-3xl sm:text-4xl font-bold text-dark-text leading-tight">Estimate Your SCHD Dividend Income</h2>
@@ -425,7 +425,7 @@ const App: React.FC = () => {
         
         {/* Disclaimer */}
         <section className="py-12 bg-gray-100">
-          <div className="container mx-auto px-4 text-center text-sm text-gray-500 w-[95%] lg:w-4/5 max-w-4xl">
+          <div className="container mx-auto px-4 text-center text-sm text-gray-500 w-[95%] lg:w-[85%] max-w-4xl">
             <h3 className="font-bold text-base text-gray-600 mb-2">Disclaimer</h3>
             <p>This calculator is for educational and informational purposes only. It is not financial advice. The calculations are estimates based on the data you provide and do not guarantee future results. Dividend yields and payouts can change over time. Always conduct your own research and consult with a qualified financial advisor before making any investment decisions.</p>
           </div>
@@ -434,7 +434,7 @@ const App: React.FC = () => {
 
       {/* Footer */}
       <footer className="bg-secondary text-white">
-        <div className="container mx-auto px-4 py-6 text-center w-[95%] lg:w-4/5 max-w-7xl">
+        <div className="container mx-auto px-4 py-6 text-center w-[95%] lg:w-[85%] max-w-7xl">
           <p>&copy; {new Date().getFullYear()} SCHD Dividend Calculator. All Rights Reserved.</p>
         </div>
       </footer>
