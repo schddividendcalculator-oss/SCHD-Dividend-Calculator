@@ -645,7 +645,7 @@ const App: React.FC = () => {
               </ol>
             </Card>
           </div>
-        </section>
+        </Section>
 
         {/* FAQ Section */}
         <Section id="faq" title="Frequently Asked Questions">
