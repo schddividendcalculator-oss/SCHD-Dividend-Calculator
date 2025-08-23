@@ -1,4 +1,4 @@
-
+import React from 'react';
 import type { DividendData, FaqItem } from './types';
 
 export const DIVIDEND_HISTORY: DividendData[] = [
@@ -35,7 +35,22 @@ export const FAQ_DATA: FaqItem[] = [
   },
   {
     question: "Is this calculator's data live?",
-    answer: "No, the share price and dividend yield are pre-filled with recent data for demonstration purposes. For the most accurate calculation, you should input the current live data from a trusted financial source like Yahoo Finance or your brokerage."
+    answer: React.createElement(
+      React.Fragment,
+      null,
+      'Yes, the SCHD share price is automatically fetched from a live data source (',
+      React.createElement(
+        'a',
+        {
+          href: 'https://finnhub.io/',
+          target: '_blank',
+          rel: 'noopener noreferrer',
+          className: 'text-accent hover:underline',
+        },
+        'Finnhub'
+      ),
+      ') when you load the page. For the most accurate dividend projection, you should manually update the dividend yield percentage from a trusted financial source like Yahoo Finance.'
+    )
   },
   {
     question: "Does this calculator account for dividend reinvestment (DRIP)?",

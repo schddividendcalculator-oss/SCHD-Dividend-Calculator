@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
+
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { DIVIDEND_HISTORY, FAQ_DATA } from './constants';
 import type { DividendData } from './types';
@@ -37,7 +38,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color = 'primar
 
 interface FaqItemProps {
   question: string;
-  answer: string;
+  answer: React.ReactNode;
 }
 
 const FaqItem: React.FC<FaqItemProps> = ({ question, answer }) => {
@@ -116,16 +117,148 @@ const ScrollToTopButton: React.FC = () => {
     );
 };
 
+// --- API Fetching Logic & Constants ---
+const CACHE_KEY_PRICE = 'schd_price';
+const CACHE_KEY_TIMESTAMP = 'schd_price_timestamp';
+const CACHE_DURATION_TRADING_MIN = 15; // Cache for 15 minutes during trading hours
+const CACHE_DURATION_CLOSED_HRS = 24 * 60; // Cache for 24 hours when market is closed
+
+/**
+ * Checks if the US stock market is likely open.
+ * Mon-Fri, 9:30 AM to 4:00 PM ET.
+ */
+const isMarketOpen = (): boolean => {
+    try {
+        const now = new Date();
+        const etDate = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+        
+        const day = etDate.getDay(); // 0 = Sunday, 6 = Saturday
+        const hour = etDate.getHours();
+        const minute = etDate.getMinutes();
+
+        // Check for weekday
+        if (day === 0 || day === 6) {
+            return false;
+        }
+
+        // Check for trading hours (9:30 AM to 4:00 PM ET)
+        const timeInMinutes = hour * 60 + minute;
+        const marketOpen = 9 * 60 + 30;
+        const marketClose = 16 * 60;
+
+        return timeInMinutes >= marketOpen && timeInMinutes < marketClose;
+    } catch (e) {
+        console.error("Error checking market hours:", e);
+        // Fail open to allow fetching if time conversion fails
+        return true; 
+    }
+};
+
 // --- Main App Component ---
 
 type Period = 'daily' | 'monthly' | 'quarterly' | 'annually';
+type YieldMethod = 'forward' | 'ttm';
 
 const App: React.FC = () => {
-  const [investment, setInvestment] = useState<number>(1000);
-  const [sharePrice, setSharePrice] = useState<number>(26);
-  const [dividendYield, setDividendYield] = useState<number>(3.55);
+  const [investment, setInvestment] = useState<number>(10000);
+  const [sharePrice, setSharePrice] = useState<number>(78.50); // Initial placeholder
+  const [dividendYield, setDividendYield] = useState<number>(3.48);
+  const [yieldMethod, setYieldMethod] = useState<YieldMethod>('forward');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activePeriod, setActivePeriod] = useState<Period>('annually');
+  const [isPriceLoading, setIsPriceLoading] = useState<boolean>(true);
+  const [priceError, setPriceError] = useState<string | null>(null);
+
+  // Memoize a list of dividends that have already been paid out.
+  const pastDividends = useMemo(() => {
+    const today = new Date();
+    // The history is sorted with the newest first, so we filter out future dates.
+    return DIVIDEND_HISTORY.filter(d => new Date(d.date) <= today);
+  }, []);
+
+  useEffect(() => {
+    const fetchSharePrice = async () => {
+      setIsPriceLoading(true);
+      setPriceError(null);
+      try {
+        const response = await fetch('/.netlify/functions/get-schd-price');
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Could not fetch latest price.');
+        }
+        const data = await response.json();
+        if (data.price) {
+          setSharePrice(data.price);
+          localStorage.setItem(CACHE_KEY_PRICE, data.price.toString());
+          localStorage.setItem(CACHE_KEY_TIMESTAMP, Date.now().toString());
+        } else {
+          throw new Error('Invalid price data received.');
+        }
+      } catch (error: any) {
+        console.error('Failed to fetch share price:', error);
+        setPriceError('Could not fetch live price.');
+        setSharePrice(27); // Default to $27 on error
+      } finally {
+        setIsPriceLoading(false);
+      }
+    };
+
+    const managePriceFetch = () => {
+        const cachedPrice = localStorage.getItem(CACHE_KEY_PRICE);
+        const cachedTimestamp = localStorage.getItem(CACHE_KEY_TIMESTAMP);
+
+        if (cachedPrice && cachedTimestamp) {
+            const price = parseFloat(cachedPrice);
+            const timestamp = parseInt(cachedTimestamp, 10);
+            const now = Date.now();
+            const ageInMinutes = (now - timestamp) / (1000 * 60);
+
+            const marketOpen = isMarketOpen();
+            const cacheDuration = marketOpen ? CACHE_DURATION_TRADING_MIN : CACHE_DURATION_CLOSED_HRS;
+
+            if (ageInMinutes < cacheDuration) {
+                setSharePrice(price);
+                setIsPriceLoading(false);
+                return;
+            }
+        }
+        fetchSharePrice();
+    };
+    
+    managePriceFetch();
+  }, []);
+
+  // Effect to automatically update the dividend yield whenever the share price or method changes.
+  useEffect(() => {
+    if (sharePrice > 0) {
+      let annualDividendPerShare: number;
+
+      if (yieldMethod === 'forward') {
+        // Forward yield uses the most recent dividend payment to project the year ahead.
+        // It's correct to use the first item from the full history, even if it's a future placeholder.
+        if (DIVIDEND_HISTORY.length > 0) {
+            annualDividendPerShare = DIVIDEND_HISTORY[0].dividend * 4;
+        } else {
+            annualDividendPerShare = 0;
+        }
+      } else { // 'ttm'
+        // TTM yield sums the last four ACTUAL paid dividends.
+        // We use the `pastDividends` array to ensure we only count historical data.
+        if (pastDividends.length >= 4) {
+          annualDividendPerShare = pastDividends.slice(0, 4).reduce((acc, curr) => acc + curr.dividend, 0);
+        } else {
+          annualDividendPerShare = 0; // Not enough data for TTM
+        }
+      }
+
+      if (annualDividendPerShare > 0) {
+        const newYield = (annualDividendPerShare / sharePrice) * 100;
+        setDividendYield(newYield);
+      } else {
+        setDividendYield(0);
+      }
+    }
+  }, [sharePrice, yieldMethod, pastDividends]);
 
   useEffect(() => {
     const body = document.body;
@@ -150,7 +283,7 @@ const App: React.FC = () => {
       monthly: yearly / 12,
       daily: yearly / 365,
     };
-  }, [investment, dividendYield]);
+  }, [investment, dividendYield, sharePrice]);
 
   const dividends = calculateDividends();
 
@@ -163,13 +296,28 @@ const App: React.FC = () => {
     date: new Date(d.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })
   })).reverse();
   
-  const dividendGrowth = (() => {
-      const lastYearDividend = DIVIDEND_HISTORY.slice(0, 4).reduce((acc, curr) => acc + curr.dividend, 0);
-      const prevYearDividend = DIVIDEND_HISTORY.slice(4, 8).reduce((acc, curr) => acc + curr.dividend, 0);
+  const dividendGrowth = useMemo(() => {
+      // Uses pastDividends to compare the last 4 paid dividends with the 4 before that.
+      if (pastDividends.length < 8) return 'N/A';
+      const lastYearDividend = pastDividends.slice(0, 4).reduce((acc, curr) => acc + curr.dividend, 0);
+      const prevYearDividend = pastDividends.slice(4, 8).reduce((acc, curr) => acc + curr.dividend, 0);
+      if (prevYearDividend === 0) return 'N/A';
       return ((lastYearDividend - prevYearDividend) / prevYearDividend * 100).toFixed(2);
-  })();
+  }, [pastDividends]);
 
-  const avgAnnualDividend = (DIVIDEND_HISTORY.slice(0, 4).reduce((acc, curr) => acc + curr.dividend, 0)).toFixed(2);
+  const annualDividendDisplay = useMemo(() => {
+    if (yieldMethod === 'forward') {
+        if (DIVIDEND_HISTORY.length > 0) {
+            const forwardDividend = (DIVIDEND_HISTORY[0].dividend * 4).toFixed(2);
+            return { value: `$${forwardDividend}`, label: 'Forward Annual Dividend' };
+        }
+        return { value: 'N/A', label: 'Forward Annual Dividend' };
+    } else { // ttm
+        if (pastDividends.length < 4) return { value: 'N/A', label: 'TTM Annual Dividend' };
+        const ttmDividend = pastDividends.slice(0, 4).reduce((acc, curr) => acc + curr.dividend, 0).toFixed(2);
+        return { value: `$${ttmDividend}`, label: 'TTM Annual Dividend' };
+    }
+  }, [yieldMethod, pastDividends]);
   
   const handleNavClick = (event: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
     event.preventDefault();
@@ -189,6 +337,52 @@ const App: React.FC = () => {
       });
     }
   };
+  
+  const renderInfoBox = () => {
+    if (isPriceLoading) {
+      return (
+        <div className="bg-accent/10 border-l-4 border-accent text-accent-dark p-4 rounded-r-lg animate-pulse">
+          <div className="flex items-center">
+            <div className="py-1"><svg className="fill-current h-6 w-6 text-accent mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zM9 11v4h2v-4h-2zm0-4h2v2h-2V7z"/></svg></div>
+            <p className="font-semibold">Fetching live share price...</p>
+          </div>
+        </div>
+      );
+    }
+
+    if (priceError) {
+      return (
+        <div className="bg-red-100 border-l-4 border-red-500 text-red-800 p-4 rounded-r-lg">
+          <div className="flex">
+            <div className="py-1">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-6 w-6 mr-4">
+                <path fillRule="evenodd" d="M8.485 2.495c.646-1.133 2.384-1.133 3.03 0l6.28 11.02A1.75 1.75 0 0116.03 16H3.97a1.75 1.75 0 01-1.515-2.485l6.28-11.02zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div>
+              <p className="font-bold">{priceError}</p>
+              <p className="text-sm">Using a default price. Please verify data on <a href="https://finance.yahoo.com/quote/SCHD" target="_blank" rel="noopener noreferrer" className="font-semibold underline hover:text-red-900">Yahoo Finance</a> and update manually.</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="bg-accent/10 border-l-4 border-accent text-accent-dark p-4 rounded-r-lg">
+        <div className="flex">
+          <div className="py-1"><svg className="fill-current h-6 w-6 text-accent mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zM9 11v4h2v-4h-2zm0-4h2v2h-2V7z"/></svg></div>
+          <div>
+            <p className="font-semibold">The share price is updated live.</p>
+            <p className="text-sm">
+              The <span className="font-bold">dividend yield</span> is calculated automatically. Verify data on <a href="https://finance.yahoo.com/quote/SCHD" target="_blank" rel="noopener noreferrer" className="font-semibold underline hover:text-accent">Yahoo Finance</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
 
   const navLinks = [
     { id: 'calculator', name: 'Calculator' },
@@ -285,23 +479,62 @@ const App: React.FC = () => {
                 </div>
                 <div>
                   <label htmlFor="sharePrice" className="block text-sm font-medium text-gray-700">SCHD Share Price ($)</label>
-                  <input type="number" id="sharePrice" value={sharePrice} onChange={e => setSharePrice(Number(e.target.value))} className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-primary focus:border-primary text-lg"/>
-                </div>
-                <div>
-                  <label htmlFor="yield" className="block text-sm font-medium text-gray-700">Dividend Yield (%)</label>
-                  <input type="number" id="yield" value={dividendYield} onChange={e => setDividendYield(Number(e.target.value))} className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-primary focus:border-primary text-lg"/>
-                </div>
-              </div>
-               <div className="bg-accent/10 border-l-4 border-accent text-accent-dark p-4 rounded-r-lg">
-                <div className="flex">
-                  <div className="py-1"><svg className="fill-current h-6 w-6 text-accent mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zM9 11v4h2v-4h-2zm0-4h2v2h-2V7z"/></svg></div>
-                  <div>
-                    <p className="font-semibold">For accurate results, use the latest data.</p>
-                    <a href="https://finance.yahoo.com/quote/SCHD/" target="_blank" rel="noopener noreferrer" className="text-sm font-medium underline hover:opacity-80">
-                      Get live SCHD data from Yahoo Finance &rarr;
-                    </a>
+                  <div className="relative mt-1">
+                      <input 
+                          type="number" 
+                          id="sharePrice" 
+                          value={sharePrice} 
+                          onChange={e => setSharePrice(Number(e.target.value))} 
+                          className="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-primary focus:border-primary text-lg pr-12"
+                          disabled={isPriceLoading}
+                          aria-describedby="price-status"
+                      />
+                      {isPriceLoading && (
+                          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none" aria-label="Loading price">
+                              <svg className="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                              </svg>
+                          </div>
+                      )}
+                  </div>
+                  <div id="price-status" className="mt-1 text-sm">
+                      {!isPriceLoading && !priceError && <p className="text-gray-500">Live price updated automatically.</p>}
                   </div>
                 </div>
+                <div>
+                  <label htmlFor="yield" className="block text-sm font-medium text-gray-700">Dividend Yield %</label>
+                  <input
+                    type="number"
+                    id="yield"
+                    value={dividendYield.toFixed(2)}
+                    readOnly
+                    className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-primary focus:border-primary text-lg bg-gray-100 text-gray-600 cursor-not-allowed"
+                    aria-describedby="yield-info"
+                  />
+                  <div className="mt-2 flex items-center rounded-lg p-1 bg-gray-200/75 text-sm font-medium">
+                      <button
+                          onClick={() => setYieldMethod('forward')}
+                          className={`w-full text-center rounded-md py-1.5 transition-all duration-300 ${yieldMethod === 'forward' ? 'bg-white text-primary shadow' : 'text-gray-500 hover:bg-gray-300/50'}`}
+                      >
+                          Forward
+                      </button>
+                      <button
+                          onClick={() => setYieldMethod('ttm')}
+                          className={`w-full text-center rounded-md py-1.5 transition-all duration-300 ${yieldMethod === 'ttm' ? 'bg-white text-primary shadow' : 'text-gray-500 hover:bg-gray-300/50'}`}
+                      >
+                          TTM
+                      </button>
+                  </div>
+                  <p id="yield-info" className="mt-2 text-sm text-gray-500">
+                    {yieldMethod === 'forward'
+                      ? 'Forward yield is based on the latest quarterly dividend.'
+                      : 'TTM yield is based on the last four quarterly dividends.'}
+                  </p>
+                </div>
+              </div>
+              <div className="mt-6">
+                {renderInfoBox()}
               </div>
             </div>
 
@@ -330,10 +563,10 @@ const App: React.FC = () => {
         </section>
 
         {/* About Section */}
-        <Section id="about" title="What is SCHD?">
+        <Section id="about" title="What is the SCHD Dividend Calculator?">
           <div className="max-w-3xl mx-auto text-center text-lg text-light-text space-y-4">
-             <p>The Schwab U.S. Dividend Equity ETF™ (SCHD) is one of the most popular dividend-focused exchange-traded funds. It aims to track the total return of the Dow Jones U.S. Dividend 100™ Index.</p>
-             <p>This index is comprised of 100 high-quality, dividend-paying U.S. stocks that have a record of consistently paying dividends and the financial strength to continue doing so. The fund is known for its low expense ratio and focus on fundamentally sound companies, making it a cornerstone for many dividend income investors.</p>
+              <p>The SCHD Dividend Calculator is a specialized tool designed to help investors estimate their potential income from the Schwab U.S. Dividend Equity ETF™ (SCHD). Inspired by the resources available on our main site, <a href="https://schddividend.com/" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline font-semibold">schddividend.com</a>, this calculator provides a user-friendly interface to project earnings based on your investment amount and up-to-date market data.</p>
+              <p>Our goal is to offer a clear and intuitive way to visualize dividend returns, analyze historical payout trends, and better understand the potential of SCHD as a cornerstone for an income-focused portfolio.</p>
           </div>
         </Section>
         
@@ -341,8 +574,8 @@ const App: React.FC = () => {
         <Section id="stats" title="Dividend Statistics & History">
           <div className="grid md:grid-cols-3 gap-4 md:gap-6 mb-12">
             <StatCard color="primary" title="Current Dividend Yield" value={`${dividendYield.toFixed(2)}%`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>}/>
-            <StatCard color="accent" title="Avg. Annual Dividend (TTM)" value={`$${avgAnnualDividend}`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01" /></svg>}/>
-            <StatCard color="primary" title="1-Year Dividend Growth" value={`${dividendGrowth}%`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" /></svg>} />
+            <StatCard color="accent" title={annualDividendDisplay.label} value={annualDividendDisplay.value} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01" /></svg>}/>
+            <StatCard color="primary" title="1-Year Dividend Growth" value={dividendGrowth !== 'N/A' ? `${dividendGrowth}%` : 'N/A'} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" /></svg>} />
           </div>
           <Card>
             <h3 className="text-xl font-bold mb-1">Dividend Payout History</h3>
@@ -396,23 +629,23 @@ const App: React.FC = () => {
             <Card>
               <h3 className="text-xl font-bold mb-4">Calculator Features</h3>
               <ul className="space-y-3 text-light-text list-disc list-inside">
-                  <li>Estimate dividend income across five different timeframes.</li>
-                  <li>Adjust investment amount, share price, and yield for custom scenarios.</li>
-                  <li>View key metrics like dividend growth and average annual payout.</li>
+                  <li>Estimate dividend income across different timeframes.</li>
+                  <li>Live share price and automatic dividend yield calculation.</li>
+                  <li>View key metrics like dividend growth and TTM annual payout.</li>
                   <li>Visualize historical dividend payouts with an interactive chart.</li>
-                  <li>Access a detailed dividend history table.</li>
+                  <li>Access a detailed dividend history table for reference.</li>
               </ul>
             </Card>
              <Card>
               <h3 className="text-xl font-bold mb-4">How To Use</h3>
               <ol className="space-y-3 text-light-text list-decimal list-inside">
-                  <li><strong>Enter Your Data:</strong> Input your total investment amount, the current SCHD share price, and the annual dividend yield.</li>
-                  <li><strong>Review Projections:</strong> Instantly see your estimated dividend income for daily, weekly, monthly, quarterly, and yearly periods.</li>
-                  <li><strong>Analyze Trends:</strong> Scroll down to the statistics and chart to understand SCHD's historical dividend performance.</li>
+                  <li><strong>Enter Your Investment:</strong> Simply input your total investment amount. The live share price and corresponding dividend yield are calculated automatically for you.</li>
+                  <li><strong>Select a Timeframe:</strong> Click on the 'Daily', 'Monthly', 'Quarterly', or 'Annually' tabs to see your projected income for that period.</li>
+                  <li><strong>Analyze & Explore:</strong> Scroll down to the statistics and interactive chart to understand SCHD's historical performance and dividend growth.</li>
               </ol>
             </Card>
           </div>
-        </Section>
+        </section>
 
         {/* FAQ Section */}
         <Section id="faq" title="Frequently Asked Questions">
@@ -427,7 +660,7 @@ const App: React.FC = () => {
         <section className="py-12 bg-gray-100">
           <div className="container mx-auto px-4 text-center text-sm text-gray-500 w-[95%] lg:w-[85%] max-w-4xl">
             <h3 className="font-bold text-base text-gray-600 mb-2">Disclaimer</h3>
-            <p>This calculator is for educational and informational purposes only. It is not financial advice. The calculations are estimates based on the data you provide and do not guarantee future results. Dividend yields and payouts can change over time. Always conduct your own research and consult with a qualified financial advisor before making any investment decisions.</p>
+            <p>This calculator is for educational and informational purposes only. It is not financial advice. The calculations are estimates based on the data you provide and do not guarantee future results. Dividend yields and payouts can change over time. Always conduct your own research and consult with a qualified financial advisor before making any investment decisions. Live share price data provided by <a href="https://finnhub.io/" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Finnhub</a>.</p>
           </div>
         </section>
       </main>
@@ -435,7 +668,10 @@ const App: React.FC = () => {
       {/* Footer */}
       <footer className="bg-secondary text-white">
         <div className="container mx-auto px-4 py-6 text-center w-[95%] lg:w-[85%] max-w-7xl">
-          <p>&copy; {new Date().getFullYear()} SCHD Dividend Calculator. All Rights Reserved.</p>
+          <p className="mb-2">&copy; {new Date().getFullYear()} SCHD Dividend Calculator. All Rights Reserved. <span className="text-gray-400 text-sm">| Last Updated: October 2024</span></p>
+          <p className="text-xs text-gray-300">
+            Live share price data provided by <a href="https://finnhub.io/" target="_blank" rel="noopener noreferrer" className="hover:underline">Finnhub</a>.
+          </p>
         </div>
       </footer>
       

@@ -10,6 +10,7 @@ A modern, user-friendly single-page application to estimate dividend income from
 
 ## ✨ Features
 
+-   **Live Share Price:** Automatically fetches the latest SCHD share price from [Finnhub](https://finnhub.io/) on load for up-to-date calculations.
 -   **Dynamic Dividend Calculation:** Instantly see your projected dividend income broken down by daily, weekly, monthly, quarterly, and yearly periods.
 -   **Customizable Inputs:** Adjust the investment amount, current share price, and dividend yield to model different scenarios.
 -   **Key Dividend Statistics:** View important metrics at a glance, including current yield, trailing-twelve-months (TTM) average annual dividend, and 1-year dividend growth.
@@ -24,22 +25,43 @@ A modern, user-friendly single-page application to estimate dividend income from
 ## 🚀 Technologies Used
 
 -   **Frontend:** React, TypeScript
+-   **Backend:** Netlify Functions (for API calls)
 -   **Styling:** Tailwind CSS
 -   **Charts:** Recharts
 -   **Dependencies:** Loaded via ESM (`esm.sh`) for a build-free setup.
 
 ---
 
+## 📊 Data Source
+
+Live share price data is provided by [Finnhub](https://finnhub.io/). Historical dividend data is manually updated and included in the application.
+
+---
+
+## ⚙️ Configuration
+
+To fetch live share price data, the application uses the Finnhub API.
+
+### Environment Variables
+
+You need to create an environment variable to store your Finnhub API key. If deploying on Netlify, set this in your site's "Build & deploy" > "Environment" settings:
+
+-   `Finhub_API`: Your API key from [Finnhub](https://finnhub.io/).
+
+The application uses a Netlify Function to securely access this API key and fetch data, so it is never exposed on the frontend.
+
+---
+
 ## 🛠️ Getting Started
 
-This project is set up to run without a complex build process. You just need a simple local server to serve the `index.html` file.
+This project is set up to run without a complex build process. You just need a simple local server to serve the `index.html` file. For the live price fetching to work locally, you'll need the Netlify CLI.
 
 ### Prerequisites
 
 -   A modern web browser.
--   A local web server. If you have Node.js installed, you can use `serve`.
+-   [Node.js](https://nodejs.org/) and [Netlify CLI](https://docs.netlify.com/cli/get-started/): `npm install -g netlify-cli`
 
-### Installation & Running
+### Installation & Running Locally
 
 1.  **Clone the repository (or download the files):**
     ```bash
@@ -47,18 +69,20 @@ This project is set up to run without a complex build process. You just need a s
     cd SCHD-Dividend-Calculator
     ```
 
-2.  **Serve the project:**
-    If you don't have a local server, you can use the `serve` package from npm:
-    ```bash
-    # Install serve globally if you haven't already
-    npm install -g serve
-
-    # Run the server in the project directory
-    serve .
+2.  **Set up local environment variables:**
+    Create a file named `.env` in the root of the project and add your API key:
+    ```
+    Finhub_API=your_finnhub_api_key_here
     ```
 
-3.  **Open in browser:**
-    Open your web browser and navigate to the URL provided by the server (usually `http://localhost:3000`).
+3.  **Run with Netlify Dev:**
+    This command will start a local server and make your environment variables and functions available.
+    ```bash
+    netlify dev
+    ```
+
+4.  **Open in browser:**
+    Open your web browser and navigate to the URL provided by the server (usually `http://localhost:8888`).
 
 ---
 
@@ -66,6 +90,10 @@ This project is set up to run without a complex build process. You just need a s
 
 ```
 .
+├── netlify/
+│   └── functions/
+│       └── get-schd-price.js  # Serverless function to fetch live price.
+├── netlify.toml      # Netlify configuration for functions.
 ├── index.html        # Main HTML file, includes all meta tags, styles, and schema markup.
 ├── index.tsx         # The entry point for the React application.
 ├── App.tsx           # The main React component containing all UI and logic.
