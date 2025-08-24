@@ -35,22 +35,7 @@ export const FAQ_DATA: FaqItem[] = [
   },
   {
     question: "Is this calculator's data live?",
-    answer: React.createElement(
-      React.Fragment,
-      null,
-      'Yes, the SCHD share price is automatically fetched from a live data source (',
-      React.createElement(
-        'a',
-        {
-          href: 'https://finnhub.io/',
-          target: '_blank',
-          rel: 'noopener noreferrer',
-          className: 'text-accent hover:underline',
-        },
-        'Finnhub'
-      ),
-      ') when you load the page. For the most accurate dividend projection, you should manually update the dividend yield percentage from a trusted financial source like Yahoo Finance.'
-    )
+    answer: 'Yes, the SCHD share price is automatically fetched from a live data source (Finnhub) when you load the page. For the most accurate dividend projection, you should manually update the dividend yield percentage from a trusted financial source like Yahoo Finance.'
   },
   {
     question: "Does this calculator account for dividend reinvestment (DRIP)?",

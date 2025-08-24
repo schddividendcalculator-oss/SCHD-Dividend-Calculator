@@ -670,7 +670,7 @@ const App: React.FC = () => {
         <div className="container mx-auto px-4 py-6 text-center w-[95%] lg:w-[85%] max-w-7xl">
           <p className="mb-2">&copy; {new Date().getFullYear()} SCHD Dividend Calculator. All Rights Reserved.</p>
           <p className="text-xs text-gray-300">
-            Live share price data provided by <a href="https://finnhub.io/" target="_blank" rel="noopener noreferrer" className="hover:underline">Finnhub</a>.
+            Featured on <a href="https://twelve.tools/" target="_blank" rel="noopener noreferrer" className="hover:underline">Twelve Tools</a>.
           </p>
         </div>
       </footer>
