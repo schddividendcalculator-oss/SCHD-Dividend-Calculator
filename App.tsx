@@ -671,8 +671,8 @@ const App: React.FC = () => {
               <a href="https://fazier.com/launches/schddividendcalculator.netlify.app" target="_blank" rel="noopener noreferrer">
                 <img src="https://fazier.com/api/v1//public/badges/launch_badges.svg?badge_type=launched&theme=light" width={120} alt="Fazier badge" />
               </a>
-              <a href="https://turbo0.com/item/schd-dividend-calculator" target="_blank" rel="noopener noreferrer">
-                <img src="https://img.turbo0.com/badge-listed-light.svg" alt="Listed on Turbo0" style={{ height: '54px', width: 'auto' }} />
+              <a href="https://dang.ai/" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.prod.website-files.com/63d8afd87da01fb58ea3fbcb/6487e2868c6c8f93b4828827_dang-badge.png" alt="Dang.ai" style={{width: '150px', height: '54px'}} width="150" height="54"/>
               </a>
             </div>
           </div>
@@ -682,10 +682,7 @@ const App: React.FC = () => {
       {/* Footer */}
       <footer className="bg-secondary text-white">
         <div className="container mx-auto px-4 py-6 text-center w-[95%] lg:w-[85%] max-w-7xl">
-          <p className="mb-2">&copy; {new Date().getFullYear()} SCHD Dividend Calculator. All Rights Reserved.</p>
-          <p className="text-xs text-gray-300">
-            Featured on <a href="https://twelve.tools/" target="_blank" rel="noopener noreferrer" className="hover:underline">Twelve Tools</a>.
-          </p>
+          <p>&copy; {new Date().getFullYear()} SCHD Dividend Calculator. All Rights Reserved.</p>
         </div>
       </footer>
       
