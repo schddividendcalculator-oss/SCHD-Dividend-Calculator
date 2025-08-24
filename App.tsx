@@ -565,7 +565,7 @@ const App: React.FC = () => {
         {/* About Section */}
         <Section id="about" title="What is the SCHD Dividend Calculator?">
           <div className="max-w-3xl mx-auto text-center text-lg text-light-text space-y-4">
-              <p>The SCHD Dividend Calculator is a specialized tool designed to help investors estimate their potential income from the Schwab U.S. Dividend Equity ETF™ (SCHD). Inspired by the resources available on our main site, <a href="https://schddividend.com/" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline font-semibold">schddividend.com</a>, this calculator provides a user-friendly interface to project earnings based on your investment amount and up-to-date market data.</p>
+              <p>The SCHD Dividend Calculator is a specialized tool designed to help investors estimate their potential income from the Schwab U.S. Dividend Equity ETF™ (SCHD). Dividend Data, Calculation Logic and Inspiration sourced from <a href="https://schddividend.com/" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline font-semibold">schddividend.com</a>, this calculator provides a user-friendly interface to project earnings based on your investment amount and up-to-date market data.</p>
               <p>Our goal is to offer a clear and intuitive way to visualize dividend returns, analyze historical payout trends, and better understand the potential of SCHD as a cornerstone for an income-focused portfolio.</p>
           </div>
         </Section>
@@ -574,7 +574,7 @@ const App: React.FC = () => {
         <Section id="stats" title="Dividend Statistics & History">
           <div className="grid md:grid-cols-3 gap-4 md:gap-6 mb-12">
             <StatCard color="primary" title="Current Dividend Yield" value={`${dividendYield.toFixed(2)}%`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>}/>
-            <StatCard color="accent" title={annualDividendDisplay.label} value={annualDividendDisplay.value} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01" /></svg>}/>
+            <StatCard color="accent" title={annualDividendDisplay.label} value={annualDividendDisplay.value} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" /></svg>}/>
             <StatCard color="primary" title="1-Year Dividend Growth" value={dividendGrowth !== 'N/A' ? `${dividendGrowth}%` : 'N/A'} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" /></svg>} />
           </div>
           <Card>
@@ -668,7 +668,7 @@ const App: React.FC = () => {
       {/* Footer */}
       <footer className="bg-secondary text-white">
         <div className="container mx-auto px-4 py-6 text-center w-[95%] lg:w-[85%] max-w-7xl">
-          <p className="mb-2">&copy; {new Date().getFullYear()} SCHD Dividend Calculator. All Rights Reserved. <span className="text-gray-400 text-sm">| Last Updated: October 2024</span></p>
+          <p className="mb-2">&copy; {new Date().getFullYear()} SCHD Dividend Calculator. All Rights Reserved.</p>
           <p className="text-xs text-gray-300">
             Live share price data provided by <a href="https://finnhub.io/" target="_blank" rel="noopener noreferrer" className="hover:underline">Finnhub</a>.
           </p>
