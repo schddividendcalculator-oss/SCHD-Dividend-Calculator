@@ -663,6 +663,20 @@ const App: React.FC = () => {
             <p>This calculator is for educational and informational purposes only. It is not financial advice. The calculations are estimates based on the data you provide and do not guarantee future results. Dividend yields and payouts can change over time. Always conduct your own research and consult with a qualified financial advisor before making any investment decisions. Live share price data provided by <a href="https://finnhub.io/" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Finnhub</a>.</p>
           </div>
         </section>
+
+        {/* Featured Section */}
+        <section className="py-12">
+          <div className="container mx-auto px-4 w-[95%] lg:w-[85%] max-w-7xl">
+            <div className="flex justify-center items-center gap-8 flex-wrap">
+              <a href="https://fazier.com/launches/schddividendcalculator.netlify.app" target="_blank" rel="noopener noreferrer">
+                <img src="https://fazier.com/api/v1//public/badges/launch_badges.svg?badge_type=launched&theme=light" width={120} alt="Fazier badge" />
+              </a>
+              <a href="https://turbo0.com/item/schd-dividend-calculator" target="_blank" rel="noopener noreferrer">
+                <img src="https://img.turbo0.com/badge-listed-light.svg" alt="Listed on Turbo0" style={{ height: '54px', width: 'auto' }} />
+              </a>
+            </div>
+          </div>
+        </section>
       </main>
 
       {/* Footer */}
