@@ -1,8 +1,8 @@
-
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { DIVIDEND_HISTORY, FAQ_DATA } from './constants';
 import type { DividendData } from './types';
+import NumberTicker from './NumberTicker';
 
 // --- Helper Components defined outside App to prevent re-creation on render ---
 
@@ -39,16 +39,17 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color = 'primar
 interface FaqItemProps {
   question: string;
   answer: React.ReactNode;
+  isOpen: boolean;
+  onToggle: () => void;
 }
 
-const FaqItem: React.FC<FaqItemProps> = ({ question, answer }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
+const FaqItem: React.FC<FaqItemProps> = ({ question, answer, isOpen, onToggle }) => {
   return (
     <div className="border-b border-gray-200 py-4">
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={onToggle}
         className="w-full flex justify-between items-center text-left text-lg font-semibold text-dark-text hover:text-primary transition-colors"
+        aria-expanded={isOpen}
       >
         <span>{question}</span>
         <span className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : 'rotate-0'}`}>
@@ -168,6 +169,7 @@ const App: React.FC = () => {
   const [activePeriod, setActivePeriod] = useState<Period>('annually');
   const [isPriceLoading, setIsPriceLoading] = useState<boolean>(true);
   const [priceError, setPriceError] = useState<string | null>(null);
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
   // Memoize a list of dividends that have already been paid out.
   const pastDividends = useMemo(() => {
@@ -555,7 +557,12 @@ const App: React.FC = () => {
                 <div className="text-center">
                     <p className="text-base sm:text-lg opacity-90">Estimated {periodTabs.find(t => t.id === activePeriod)?.name} Income</p>
                     <p className="text-4xl sm:text-5xl font-extrabold my-2 tracking-tight">
-                        {formatCurrency(dividends[activePeriod])}
+                        <NumberTicker 
+                            value={dividends[activePeriod]}
+                            prefix="$"
+                            duration={1000}
+                            decimalPlaces={2}
+                        />
                     </p>
                 </div>
             </Card>
@@ -651,7 +658,13 @@ const App: React.FC = () => {
         <Section id="faq" title="Frequently Asked Questions">
           <div className="max-w-3xl mx-auto">
             {FAQ_DATA.map((faq, index) => (
-              <FaqItem key={index} question={faq.question} answer={faq.answer} />
+              <FaqItem
+                key={index}
+                question={faq.question}
+                answer={faq.answer}
+                isOpen={openFaqIndex === index}
+                onToggle={() => setOpenFaqIndex(openFaqIndex === index ? null : index)}
+              />
             ))}
           </div>
         </Section>
