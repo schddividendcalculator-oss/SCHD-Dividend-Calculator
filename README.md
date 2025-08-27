@@ -106,4 +106,4 @@ This project is set up to run without a complex build process. You just need a s
 
 ## ⚖️ Disclaimer
 
-This calculator is for educational and informational purposes only and does not constitute financial advice. The calculations are estimates and do not guarantee future results. Always conduct your own research and consult a financial professional before making investment decisions.
+This calculator is a protype version, original and live site may be different also website is for educational and informational purposes only and does not constitute financial advice. The calculations are estimates and do not guarantee future results. Always conduct your own research and consult a financial professional before making investment decisions.
