@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 
 export interface DividendData {
   date: string;
@@ -6,5 +7,5 @@ export interface DividendData {
 
 export interface FaqItem {
   question: string;
-  answer: string;
+  answer: ReactNode;
 }
