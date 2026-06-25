@@ -290,7 +290,12 @@ const App: React.FC = () => {
   const dividends = calculateDividends();
 
   const formatCurrency = (value: number) => {
-    return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+    return value.toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 4
+    });
   };
   
   const chartData = DIVIDEND_HISTORY.map(d => ({
@@ -620,7 +625,7 @@ const App: React.FC = () => {
                     {DIVIDEND_HISTORY.map((item, index) => (
                       <tr key={index} className="hover:bg-gray-50">
                         <td className="p-3 text-sm text-gray-700">{item.date}</td>
-                        <td className="p-3 text-sm text-gray-700 text-right font-medium">{item.dividend.toFixed(2)}</td>
+                        <td className="p-3 text-sm text-gray-700 text-right font-medium">{item.dividend.toFixed(4)}</td>
                       </tr>
                     ))}
                   </tbody>

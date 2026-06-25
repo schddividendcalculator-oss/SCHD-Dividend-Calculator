@@ -169,7 +169,218 @@
 </script>
 </head>
   <body class="bg-light-bg text-dark-text font-sans">
-    <div id="root"></div>
+    <div id="root">
+      <!-- Static HTML for SEO and initial render -->
+      <div class="bg-light-bg min-h-screen">
+        <!-- Header -->
+        <header class="bg-white shadow-sm sticky top-0 z-40">
+          <div class="container mx-auto px-4 py-4 flex justify-between items-center w-[95%] lg:w-[85%] max-w-7xl">
+            <div class="flex items-center space-x-2 sm:space-x-3">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM8.5 15.5H7v-5h1.5v5zm3.5 0H10.5v-7H12v7zm3.5 0H14v-9h1.5v9z"/>
+              </svg>
+              <h1 class="text-lg sm:text-2xl font-bold text-dark-text">SCHD Dividend Calculator</h1>
+            </div>
+            <nav class="hidden md:flex space-x-6">
+              <a href="#calculator" class="text-light-text font-medium hover:text-primary transition">Calculator</a>
+              <a href="#about" class="text-light-text font-medium hover:text-primary transition">About</a>
+              <a href="#stats" class="text-light-text font-medium hover:text-primary transition">Stats</a>
+              <a href="#faq" class="text-light-text font-medium hover:text-primary transition">FAQ</a>
+            </nav>
+          </div>
+        </header>
+
+        <main>
+          <!-- Calculator Section -->
+          <section id="calculator" class="pt-12 pb-12 sm:pt-16 sm:pb-16 md:pt-24 md:pb-20 bg-white">
+            <div class="container mx-auto px-4 grid md:grid-cols-2 gap-8 md:gap-12 items-center w-[95%] lg:w-[85%] max-w-7xl">
+              <div class="space-y-6">
+                <h2 class="text-3xl sm:text-4xl font-bold text-dark-text leading-tight">Estimate Your SCHD Dividend Income</h2>
+                <p class="text-lg text-light-text">Enter your investment details to see your potential passive income from SCHD dividends.</p>
+                
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Investment Amount ($)</label>
+                    <div class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm text-lg bg-gray-50">10,000</div>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">SCHD Share Price ($)</label>
+                    <div class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm text-lg bg-gray-50">78.50</div>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Dividend Yield %</label>
+                    <div class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm text-lg bg-gray-50">3.48%</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Result Display -->
+              <div class="bg-gradient-to-br from-accent-dark to-accent text-white flex flex-col justify-center rounded-xl shadow-md p-6 md:p-8">
+                <p class="text-center text-lg opacity-90 mb-4">Based on your $10,000.00 investment:</p>
+                <div class="text-center">
+                  <p class="text-base sm:text-lg opacity-90">Estimated Annual Income</p>
+                  <p class="text-4xl sm:text-5xl font-extrabold my-2 tracking-tight">$348.00</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- About Section -->
+          <section id="about" class="py-12 sm:py-16 md:py-20">
+            <div class="container mx-auto px-4 w-[95%] lg:w-[85%] max-w-7xl">
+              <h2 class="text-3xl sm:text-4xl font-bold text-center text-dark-text mb-4">What is the SCHD Dividend Calculator?</h2>
+              <div class="w-24 h-1 bg-primary mx-auto mb-10"></div>
+              <div class="max-w-3xl mx-auto text-center text-lg text-light-text space-y-4">
+                <p>The SCHD Dividend Calculator is a specialized tool designed to help investors estimate their potential income from the Schwab U.S. Dividend Equity ETF™ (SCHD). Dividend Data, Calculation Logic and Inspiration sourced from <a href="https://schddividend.com/" class="text-accent hover:underline font-semibold">schddividend.com</a>, this calculator provides a user-friendly interface to project earnings based on your investment amount and up-to-date market data.</p>
+                <p>Our goal is to offer a clear and intuitive way to visualize dividend returns, analyze historical payout trends, and better understand the potential of SCHD as a cornerstone for an income-focused portfolio.</p>
+              </div>
+            </div>
+          </section>
+          
+          <!-- Dividend Stats Section -->
+          <section id="stats" class="py-12 sm:py-16 md:py-20">
+            <div class="container mx-auto px-4 w-[95%] lg:w-[85%] max-w-7xl">
+              <h2 class="text-3xl sm:text-4xl font-bold text-center text-dark-text mb-4">Dividend Statistics & History</h2>
+              <div class="w-24 h-1 bg-primary mx-auto mb-10"></div>
+              
+              <div class="grid md:grid-cols-3 gap-4 md:gap-6 mb-12">
+                <!-- Stat 1 -->
+                <div class="bg-white rounded-xl shadow-md p-4 flex items-center">
+                  <div class="p-3 rounded-lg mr-4 bg-primary/10 text-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+                  </div>
+                  <div>
+                    <p class="text-sm text-light-text font-medium">Current Dividend Yield</p>
+                    <p class="text-xl font-bold text-dark-text">3.48%</p>
+                  </div>
+                </div>
+                <!-- Stat 2 -->
+                <div class="bg-white rounded-xl shadow-md p-4 flex items-center">
+                  <div class="p-3 rounded-lg mr-4 bg-accent/10 text-accent">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" /></svg>
+                  </div>
+                  <div>
+                    <p class="text-sm text-light-text font-medium">TTM Annual Dividend</p>
+                    <p class="text-xl font-bold text-dark-text">$1.0473</p>
+                  </div>
+                </div>
+                <!-- Stat 3 -->
+                <div class="bg-white rounded-xl shadow-md p-4 flex items-center">
+                  <div class="p-3 rounded-lg mr-4 bg-primary/10 text-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" /></svg>
+                  </div>
+                  <div>
+                    <p class="text-sm text-light-text font-medium">1-Year Dividend Growth</p>
+                    <p class="text-xl font-bold text-dark-text">N/A</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-white rounded-xl shadow-md p-6 md:p-8">
+                <h3 class="text-xl font-bold mb-1">Dividend Payout History</h3>
+                <p class="text-light-text mb-6">Quarterly dividend per share paid to SCHD investors.</p>
+                <div class="overflow-auto max-h-80">
+                  <table class="w-full text-left">
+                    <thead class="bg-gray-50 sticky top-0">
+                      <tr>
+                        <th class="p-3 text-sm font-semibold tracking-wide">Date</th>
+                        <th class="p-3 text-sm font-semibold tracking-wide text-right">Dividend ($)</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                      <tr><td class="p-3 text-sm text-gray-700">6/24/2026</td><td class="p-3 text-sm text-gray-700 text-right font-medium">0.2525</td></tr>
+                      <tr><td class="p-3 text-sm text-gray-700">3/25/2026</td><td class="p-3 text-sm text-gray-700 text-right font-medium">0.2569</td></tr>
+                      <tr><td class="p-3 text-sm text-gray-700">12/10/2025</td><td class="p-3 text-sm text-gray-700 text-right font-medium">0.2782</td></tr>
+                      <tr><td class="p-3 text-sm text-gray-700">9/24/2025</td><td class="p-3 text-sm text-gray-700 text-right font-medium">0.2604</td></tr>
+                      <tr><td class="p-3 text-sm text-gray-700">6/25/2025</td><td class="p-3 text-sm text-gray-700 text-right font-medium">0.2602</td></tr>
+                      <tr><td class="p-3 text-sm text-gray-700">3/26/2025</td><td class="p-3 text-sm text-gray-700 text-right font-medium">0.2488</td></tr>
+                      <tr><td class="p-3 text-sm text-gray-700">12/11/2024</td><td class="p-3 text-sm text-gray-700 text-right font-medium">0.2645</td></tr>
+                      <tr><td class="p-3 text-sm text-gray-700">9/25/2024</td><td class="p-3 text-sm text-gray-700 text-right font-medium">0.2515</td></tr>
+                      <tr><td class="p-3 text-sm text-gray-700">6/26/2024</td><td class="p-3 text-sm text-gray-700 text-right font-medium">0.2747</td></tr>
+                      <tr><td class="p-3 text-sm text-gray-700">3/20/2024</td><td class="p-3 text-sm text-gray-700 text-right font-medium">0.2037</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+          
+          <!-- Features & How-to Section -->
+          <section id="features" class="py-12 sm:py-16 md:py-20">
+            <div class="container mx-auto px-4 w-[95%] lg:w-[85%] max-w-7xl">
+              <h2 class="text-3xl sm:text-4xl font-bold text-center text-dark-text mb-4">Features & How To Use</h2>
+              <div class="w-24 h-1 bg-primary mx-auto mb-10"></div>
+              
+              <div class="grid md:grid-cols-2 gap-8 md:gap-12">
+                <div class="bg-white rounded-xl shadow-md p-6 md:p-8">
+                  <h3 class="text-xl font-bold mb-4">Calculator Features</h3>
+                  <ul class="space-y-3 text-light-text list-disc list-inside">
+                    <li>Estimate dividend income across different timeframes.</li>
+                    <li>Live share price and automatic dividend yield calculation.</li>
+                    <li>View key metrics like dividend growth and TTM annual payout.</li>
+                    <li>Visualize historical dividend payouts with an interactive chart.</li>
+                    <li>Access a detailed dividend history table for reference.</li>
+                  </ul>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-6 md:p-8">
+                  <h3 class="text-xl font-bold mb-4">How To Use</h3>
+                  <ol class="space-y-3 text-light-text list-decimal list-inside">
+                    <li><strong>Enter Your Investment:</strong> Simply input your total investment amount. The live share price and corresponding dividend yield are calculated automatically for you.</li>
+                    <li><strong>Select a Timeframe:</strong> Click on the 'Daily', 'Monthly', 'Quarterly', or 'Annually' tabs to see your projected income for that period.</li>
+                    <li><strong>Analyze & Explore:</strong> Scroll down to the statistics and interactive chart to understand SCHD's historical performance and dividend growth.</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- FAQ Section -->
+          <section id="faq" class="py-12 sm:py-16 md:py-20">
+            <div class="container mx-auto px-4 w-[95%] lg:w-[85%] max-w-7xl">
+              <h2 class="text-3xl sm:text-4xl font-bold text-center text-dark-text mb-4">Frequently Asked Questions</h2>
+              <div class="w-24 h-1 bg-primary mx-auto mb-10"></div>
+              <div class="max-w-3xl mx-auto space-y-4">
+                <div class="border-b border-gray-200 py-4">
+                  <h3 class="text-lg font-semibold text-dark-text">What is SCHD?</h3>
+                  <p class="text-light-text text-base mt-2">SCHD stands for the Schwab U.S. Dividend Equity ETF™. It is an exchange-traded fund designed to track the performance of the Dow Jones U.S. Dividend 100™ Index, which is composed of high-dividend-yielding U.S. stocks with a history of consistent dividend payments and strong fundamental characteristics.</p>
+                </div>
+                <div class="border-b border-gray-200 py-4">
+                  <h3 class="text-lg font-semibold text-dark-text">How often does SCHD pay dividends?</h3>
+                  <p class="text-light-text text-base mt-2">SCHD typically pays dividends to its shareholders on a quarterly basis, usually in March, June, September, and December.</p>
+                </div>
+                <div class="border-b border-gray-200 py-4">
+                  <h3 class="text-lg font-semibold text-dark-text">Is this calculator's data live?</h3>
+                  <p class="text-light-text text-base mt-2">Yes, the SCHD share price is automatically fetched from a live data source (Finnhub) when you load the page. For the most accurate dividend projection, you should manually update the dividend yield percentage from a trusted financial source like Yahoo Finance.</p>
+                </div>
+                <div class="border-b border-gray-200 py-4">
+                  <h3 class="text-lg font-semibold text-dark-text">Does this calculator account for dividend reinvestment (DRIP)?</h3>
+                  <p class="text-light-text text-base mt-2">This tool calculates simple dividend income based on your initial investment and does not automatically compound or reinvest dividends. It provides a snapshot of your potential income for a given period based on the inputs.</p>
+                </div>
+                <div class="border-b border-gray-200 py-4">
+                  <h3 class="text-lg font-semibold text-dark-text">What is a dividend yield?</h3>
+                  <p class="text-light-text text-base mt-2">The dividend yield is a financial ratio that shows how much a company pays out in dividends each year relative to its stock price. It is calculated by dividing the annual dividend per share by the current market price per share and is expressed as a percentage.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+          
+          <!-- Disclaimer -->
+          <section class="py-12 bg-gray-100">
+            <div class="container mx-auto px-4 text-center text-sm text-gray-500 w-[95%] lg:w-[85%] max-w-4xl">
+              <h3 class="font-bold text-base text-gray-600 mb-2">Disclaimer</h3>
+              <p>This calculator is for educational and informational purposes only. It is not financial advice. The calculations are estimates based on the data you provide and do not guarantee future results. Dividend yields and payouts can change over time. Always conduct your own research and consult with a qualified financial advisor before making any investment decisions. Live share price data provided by <a href="https://finnhub.io/" class="text-accent hover:underline">Finnhub</a>.</p>
+            </div>
+          </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-secondary text-white">
+          <div class="container mx-auto px-4 py-6 text-center w-[95%] lg:w-[85%] max-w-7xl">
+            <p>&copy; 2026 SCHD Dividend Calculator. All Rights Reserved.</p>
+          </div>
+        </footer>
+      </div>
+    </div>
     <script type="module" src="/index.tsx"></script>
   </body>
 </html>

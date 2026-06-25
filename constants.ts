@@ -2,8 +2,12 @@ import React from 'react';
 import type { DividendData, FaqItem } from './types';
 
 export const DIVIDEND_HISTORY: DividendData[] = [
-  { date: "6/25/2025", dividend: 0.26 },
-  { date: "3/26/2025", dividend: 0.25 },
+  { date: "6/24/2026", dividend: 0.2525 },
+  { date: "3/25/2026", dividend: 0.2569 },
+  { date: "12/10/2025", dividend: 0.2782 },
+  { date: "9/24/2025", dividend: 0.2604 },
+  { date: "6/25/2025", dividend: 0.2602 },
+  { date: "3/26/2025", dividend: 0.2488 },
   { date: "12/11/2024", dividend: 0.26 },
   { date: "9/25/2024", dividend: 0.25 },
   { date: "6/26/2024", dividend: 0.27 },
